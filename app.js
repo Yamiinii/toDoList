@@ -1,31 +1,74 @@
-document.getElementById("addTaskBtn").addEventListener("click",addTask)
+// Load existing tasks from localStorage when page loads
+window.addEventListener("DOMContentLoaded", loadTasks);
 
-function addTask(){
-    const input=document.getElementById("taskInput")
-    const tasktext = input.value.trim();
+document.getElementById("addTaskBtn").addEventListener("click", addTask);
 
-    if(tasktext=="" ) return;
+function addTask() {
+  const input = document.getElementById("taskInput");
+  const taskText = input.value.trim();
+  if (taskText === "") return;
 
-    const li=document.createElement("li");
-    li.textContent=tasktext;
+  const task = {
+    text: taskText,
+    done: false
+  };
 
-    const doneBtn= document.createElement("button")
-    doneBtn.textContent="Done"
-    doneBtn.onclick=()=>{
-        li.style.textDecoration="line-through"
-        doneBtn.disabled=true
-    }
+  addTaskToDOM(task);
+  saveTask(task);
+  input.value = "";
+}
 
-    const deleteBtn=document.createElement("button")
-    deleteBtn.textContent="Delete"
-    deleteBtn.onclick=()=>{
-        li.remove();
-    }
+function addTaskToDOM(task) {
+  const li = document.createElement("li");
+  li.textContent = task.text;
 
-    li.appendChild(doneBtn)
-    li.appendChild(deleteBtn)
+  const doneBtn = document.createElement("button");
+  doneBtn.textContent = "✅ Done";
+  doneBtn.onclick = () => {
+    li.style.textDecoration = "line-through";
+    doneBtn.disabled = true;
+    updateTask(task.text, true);
+  };
 
-    document.getElementById("taskList").appendChild(li)
-    input.value=""
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "❌ Delete";
+  deleteBtn.onclick = () => {
+    li.remove();
+    deleteTask(task.text);
+  };
 
+  if (task.done) {
+    li.style.textDecoration = "line-through";
+    doneBtn.disabled = true;
+  }
+
+  li.appendChild(doneBtn);
+  li.appendChild(deleteBtn);
+
+  document.getElementById("taskList").appendChild(li);
+}
+
+function saveTask(task) {
+  const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  tasks.push(task);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function deleteTask(text) {
+  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  tasks = tasks.filter((t) => t.text !== text);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function updateTask(text, isDone) {
+  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  tasks = tasks.map((t) =>
+    t.text === text ? { ...t, done: isDone } : t
+  );
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasks() {
+  const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  tasks.forEach(addTaskToDOM);
 }
