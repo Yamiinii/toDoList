@@ -59,15 +59,4 @@ function deleteTask(text) {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function updateTask(text, isDone) {
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks = tasks.map((t) =>
-    t.text === text ? { ...t, done: isDone } : t
-  );
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
 
-function loadTasks() {
-  const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks.forEach(addTaskToDOM);
-}
