@@ -57,6 +57,6 @@ function deleteTask(text) {
   let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
   tasks = tasks.filter((t) => t.text !== text);
   localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+} 
 
 
