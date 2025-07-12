@@ -1,4 +1,45 @@
-// Load existing tasks from localStorage when page loads
+const fakeAPI={
+    data:[],
+
+    async getTasks(){
+        return new Promise((resolve)=>{
+            setTimeout(()=>{resolve([...this.data])}) //Resolves the promise with a copy of this.data
+            //This uses the spread operator to return a shallow copy of the array.
+            //The original this.data isn’t accidentally modified outside the fake API.
+            //done for a safe copy
+        },1000 )
+    },
+    async addTask(task){
+        return new Promise((resolve)=>{
+            setTimeout(()=>{
+                this.data.push(task);
+                resolve(task)
+            },1000)
+        })
+    },
+
+    async deleteTask(text){
+        return new Promise((resolve)=>{
+            setTimeout(()=>{
+                this.data=this.data.filter((t)=>t.text!==text)
+                resolve()
+            },1000)
+        })
+    },
+    async updateTask(text,done){
+        return new Promise((resolve)=>{
+            setTimeout(()=>{
+                this.data=this.data.map((t)=>t.text===text?{...t,done}:t)
+                //Copy all properties of t
+                //But override the done field with the new value
+                //If it doesn’t match, we just return t unchanged.
+                resolve()
+            },1000)
+        })
+
+}
+}
+
 window.addEventListener("DOMContentLoaded", loadTasks);
 
 document.getElementById("addTaskBtn").addEventListener("click", addTask);
@@ -16,6 +57,13 @@ function addTask() {
   addTaskToDOM(task);
   saveTask(task);
   input.value = "";
+}
+
+async function loadTasks(){
+    const tasks=await fakeAPI.getTasks();
+    tasks.forEach(addTaskToDOM)
+    //tasks is an array of task objects (fetched from fake API).
+    //forEach(...) loops through each task and adds to the DOM
 }
 
 function addTaskToDOM(task) {
@@ -46,29 +94,4 @@ function addTaskToDOM(task) {
   li.appendChild(deleteBtn);
 
   document.getElementById("taskList").appendChild(li);
-}
-
-function saveTask(task) {
-  const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks.push(task);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-function deleteTask(text) {
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks = tasks.filter((t) => t.text !== text);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-function updateTask(text, isDone) {
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks = tasks.map((t) =>
-    t.text === text ? { ...t, done: isDone } : t
-  );
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-function loadTasks() {
-  const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks.forEach(addTaskToDOM);
 }
