@@ -1,4 +1,3 @@
-window.addEventListener("DOMContentLoaded",loadTasks)
 document.getElementById("addTaskBtn").addEventListener("click",addTask)
 
 function addTask(){
@@ -7,56 +6,26 @@ function addTask(){
 
     if(tasktext=="" ) return;
 
-    const task={
-        text:tasktext,
-        done:false
-    }
+    const li=document.createElement("li");
+    li.textContent=tasktext;
 
-    addTaskToDOM(task);
-    saveTask(task);
-    input.value="";
-
-}
-
-function addTaskToDOM(task){
-    const li=document.createElement("li")
-    li.textContent=task.text;
-
-    const doneBtn=document.createElement("button")
+    const doneBtn= document.createElement("button")
     doneBtn.textContent="Done"
     doneBtn.onclick=()=>{
-        li.style.textDecoration="line-through";
+        li.style.textDecoration="line-through"
         doneBtn.disabled=true
-        updateTask(task.text,true)
     }
- const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "❌ Delete";
-  deleteBtn.onclick = () => {
-    li.remove();
-    deleteTask(task.text);
-  };
 
-   if (task.done) {
-    li.style.textDecoration = "line-through";
-    doneBtn.disabled = true;
-  }
+    const deleteBtn=document.createElement("button")
+    deleteBtn.textContent="Delete"
+    deleteBtn.onclick=()=>{
+        li.remove();
+    }
 
-  li.appendChild(doneBtn);
-  li.appendChild(deleteBtn);
+    li.appendChild(doneBtn)
+    li.appendChild(deleteBtn)
 
-  document.getElementById("taskList").appendChild(li);
+    document.getElementById("taskList").appendChild(li)
+    input.value=""
+
 }
-
-function saveTask(task){
-    const tasks=JSON.parse(localStorage.getItem("tasks") || "[]")
-    tasks.push(task)
-    localStorage.setItem("tasks",JSON.stringify(tasks));
-}
-
-function deleteTask(text) {
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks = tasks.filter((t) => t.text !== text);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-} 
-
-
